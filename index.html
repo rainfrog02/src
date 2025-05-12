@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>貪食蛇遊戲</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="startScreen">
+        <h1>貪食蛇遊戲</h1>
+        <button id="startButton" onclick="startGame()">開始遊戲</button>
+    </div>
+    <canvas id="game" width="400" height="400"></canvas>
+    <div id="gameOverScreen" style="display:none;">
+        <h2>遊戲結束</h2>
+        <p>你的得分：<span id="finalScore"></span></p>
+        <label for="playerName">請輸入你的名字：</label>
+        <input type="text" id="playerName" />
+        <button id="submitScore">提交分數</button>
+        <button id="restartButton">重新開始</button>
+    </div>
+    <div id="leaderboardScreen" style="display:none;">
+        <h2>排行榜</h2>
+        <ol id="leaderboard">
+        </ol>
+        <button id="backToStart">返回開始畫面</button>
+    </div>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

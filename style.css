@@ -1,0 +1,78 @@
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #111;
+    color: white;
+    font-family: Arial, sans-serif;
+    position: relative;
+}
+
+canvas {
+    background-color: #222;
+    border: 2px solid #0f0;
+}
+
+#startScreen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 1;
+}
+
+#startScreen button {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    background-color: #0f0;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+    color: black;
+}
+
+#gameOverScreen,
+#leaderboardScreen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 2;
+}
+
+#gameOverScreen button,
+#leaderboardScreen button {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    background-color: #0f0;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+    color: black;
+}
+
+#leaderboard {
+    list-style-type: none;
+    padding: 0;
+}
+
+#leaderboard li {
+    padding: 5px 0;
+    border-bottom: 1px solid #555;
+    width: 300px;
+    text-align: center;
+}
+
+#leaderboard li:last-child {
+    border-bottom: none;
+}
