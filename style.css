@@ -16,13 +16,18 @@ body.stage1-background {
 }
 
 body.stage2-background {
-  background-color: #574f4d; /* 第二階段背景色 (深藍灰色) */
+  background-color: #9a9c92; /* 第二階段背景色  */
   background-image: none;
 }
 
 body.stage3-background {
-  background-color: #2e2730; /* 第三階段背景色 (更深一層的藍灰) */
+  background-color: #5c4559; /* 第三階段背景色  */
   background-image: none;
+}
+
+body.victory-background {
+  background: linear-gradient(135deg, #ffe0f7 0%, #ffd6e0 100%);
+  transition: background 1s;
 }
 
 
@@ -93,7 +98,7 @@ body.stage3-background {
 #startScreen h1 {
   font-size: 2.2em; /* 標題字體大小 */
   margin-bottom: 30px; /* 標題下方間距 */
-  color: #BBDEFB; /* 標題顏色，更亮一點的藍色 */
+  color: #ff4040; /* 標題顏色 */
 }
 
 #startScreen .input-group {
@@ -154,12 +159,12 @@ body.stage3-background {
   transform: translate(-50%, -50%); /* 居中 */
   width: 150px; /* 身體大小 */
   height: 150px;
-  background-color: #D3D3D3; /* 淡灰色 */
+  background-color: #ebebeb; 
   border-radius: 50%; /* 圓形 */
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); /* 陰影 */
+  box-shadow: 0 0 10px rgba(129, 109, 104, 0.39); /* 陰影 */
   z-index: 5; /* 確保在敵人之下 */
   transition: left 0.1s linear, top 0.1s linear; /* 平滑移動 */
 }
@@ -208,7 +213,7 @@ body.stage3-background {
   width: 28px; /* 嘴巴稍微寬一點 */
   height: 8px; /* 嘴巴稍微高一點 */
   border-radius: 0 0 15px 15px; /* 笑臉弧度 */
-  background-color: #333;
+  background-color: #d66d6d;
   transform: translateX(-50%) translateY(2px); /* 稍微下移，看起來更自然 */
 }
 
@@ -311,10 +316,10 @@ body.stage3-background {
   height: 0;
   border-left: 40px solid transparent; /* 左右邊緣 */
   border-right: 40px solid transparent; /* 左右邊緣 */
-  border-bottom: 80px solid #FF5722; /* 橘色，作為底邊，形成三角形 */
+  border-bottom: 80px solid #ff6333; /* 橘色，作為底邊，形成三角形 */
   border-radius: 0; /* 移除圓角 */
   box-shadow: 0 0 15px rgba(255, 87, 34, 0.5); /* 橘色陰影 */
-  font-size: 0.9em; /* 文字稍微大一點 */
+  font-size: 1.1em; /* 文字稍微大一點 */
   color: #FFF; /* 白色文字 */
   text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* 文字陰影 */
   pointer-events: auto; /* 確保可點擊 */
@@ -334,7 +339,7 @@ body.stage3-background {
   position: absolute;
   width: 20px; /* 子彈大小 */
   height: 20px;
-  background-color: #3b7fff; /* 藍色子彈 */
+  background-color: #f9ff49; /* 藍色子彈 */
   border-radius: 50%;
   z-index: 5; /* 確保子彈在敵人上方 */
   box-shadow: 0 0 8px rgba(0, 191, 255, 0.8);
@@ -349,8 +354,8 @@ body.stage3-background {
   width: 100px; /* 普通六角形敵人大小 */
   height: 100px;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); /* 六角形 */
-  box-shadow: 0 0 20px rgba(231, 76, 60, 0.7); /* 紅色光暈 */
-  font-size: 1.1em;
+  box-shadow: 0 0 20px rgb(255, 99, 99); /* 紅色光暈 */
+  font-size: 1.5em;
   color: #FFF;
   text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
   display: flex;
@@ -377,22 +382,87 @@ body.stage3-background {
   to { box-shadow: 0 0 50px rgba(192, 57, 43, 0.5); transform: scale(1.05); }
 }
 
-/* ==================================== */
-/* 閃亮軌跡效果 (用於Boss被打飛) */
-/* ==================================== */
-.sparkle-trail {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background: radial-gradient(circle, #FFF 0%, #FFD700 50%, transparent 100%); /* 白色到金色的漸變，中心發光 */
-  border-radius: 50%;
-  opacity: 0; /* 初始透明 */
-  animation: sparkle-fade-out 0.8s forwards; /* 向前動畫，結束時保持狀態 */
-  z-index: 10; /* 確保在最上層 */
-  pointer-events: none; /* 不影響鼠標事件 */
-}
+
 
 @keyframes sparkle-fade-out {
   from { opacity: 1; transform: scale(1); }
   to { opacity: 0; transform: scale(0.5); }
+}
+
+/* confetti 彩帶動畫 */
+.confetti {
+    position: fixed;
+    top: -20px;
+    width: 10px;
+    height: 18px;
+    border-radius: 3px;
+    opacity: 0.8;
+    z-index: 9999;
+    pointer-events: none;
+    animation: confetti-fall 2.5s cubic-bezier(.5,1,.89,1) forwards;
+}
+@keyframes confetti-fall {
+    to {
+        transform: translateY(100vh) rotateZ(360deg);
+        opacity: 0.7;
+    }
+}
+
+#leaderboard {
+   position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(103, 227, 255, 0.95); /* 半透明白底 */
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  padding: 28px 24px 20px 24px;
+  z-index: 20000;
+  color: #d72660;            /* 主要字色 */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 1.15em;
+  display: none;             /* 預設隱藏，由JS控制顯示 */
+}
+
+#leaderboard h2 {
+  margin-top: 0;
+    margin-bottom: 18px;
+    font-size: 1.5em;
+    color: #ffffff;
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+#leaderboard ol {
+  padding-left: 22px;
+  margin: 0;
+}
+
+#leaderboard li {
+  margin-bottom: 10px;
+  font-size: 1.08em;
+  color: #101010;
+  background: #ffffffa8;
+  border-radius: 8px;
+  padding: 7px 12px;
+  box-shadow: 0 2px 8px rgba(215,38,96,0.06);
+  transition: background 0.2s;
+}
+
+#leaderboard li:first-child {
+  background: #ffffff;
+    color: #002dff;
+    font-weight: bold;
+    font-size: 1.18em;
+    border: 2px solid #002dff;
+}
+
+#leaderboard li:nth-child(2) {
+  background: #ffffffa8;
+    color: #101010;
+}
+
+#leaderboard li:nth-child(3) {
+  background: #ffffffa8;
+    color: #101010;
 }
