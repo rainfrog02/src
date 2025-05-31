@@ -1,78 +1,398 @@
 body {
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #111;
-    color: white;
-    font-family: Arial, sans-serif;
-    position: relative;
+  margin: 0;
+  /* 移除 display: flex 等，因為 .screen 會絕對定位覆蓋整個視窗 */
+  background-color: #1A2B3C; /* 墨藍色背景 */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* 選擇一個易讀的字體 */
+  color: #E0E0E0; /* 淺灰色文字，與深色背景形成對比 */
+  min-height: 100vh; /* 確保body至少和視窗一樣高 */
+  overflow: hidden; /* 防止滾動條出現 */
+  transition: background-color 1s ease-in-out, background-image 1s ease-in-out; /* 背景顏色/圖片過渡 */
 }
 
-canvas {
-    background-color: #222;
-    border: 2px solid #0f0;
+/* 階段背景 (將類別應用到 body 上，以便影響整個遊戲區域) */
+body.stage1-background {
+  background-color: #908678; /* 第一階段背景色 */
+  background-image: none; /* 確保沒有圖片，如果之前有 */
 }
 
+body.stage2-background {
+  background-color: #574f4d; /* 第二階段背景色 (深藍灰色) */
+  background-image: none;
+}
+
+body.stage3-background {
+  background-color: #2e2730; /* 第三階段背景色 (更深一層的藍灰) */
+  background-image: none;
+}
+
+
+/* 開始畫面和遊戲畫面容器的基礎樣式 */
+.screen {
+  position: absolute; /* 讓所有畫面堆疊，方便切換 */
+  top: 0;
+  left: 0;
+  width: 100vw; /* 視窗寬度 */
+  height: 100vh; /* 視窗高度 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* 垂直居中 */
+  align-items: center; /* 水平居中 */
+  /* background-color: #1A2B3C; /* 移除，由body的背景色控制或js動態控制 */
+  transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out; /* 切換畫面的淡入淡出效果 */
+  opacity: 0;
+  visibility: hidden; /* 預設隱藏 */
+  pointer-events: none; /* 預設不響應鼠標事件 */
+  overflow: hidden; /* 隱藏超出邊界的部分 */
+}
+
+/* 活躍中的畫面 */
+.screen.active {
+  opacity: 1; /* 顯示 */
+  visibility: visible; /* 可見 */
+  pointer-events: auto; /* 活躍畫面響應鼠標事件 */
+}
+
+/* 開始畫面特有樣式 */
 #startScreen {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    z-index: 1;
+    /* 這裡不再需要 background-color，由 body 控制 */
+    /* 確保 startScreen 內容居中，因為它是初始顯示的 */
+    background-color: #1A2B3C; /* 開始畫面仍然需要自己的背景色，不讓body的背景影響 */
+}
+
+/* 遊戲畫面特有樣式 */
+#gameScreen {
+  /* background-color 將由 body 的 stage-background 類別控制 */
+  color: #F5DEB3; /* 文字顏色，淺米色 */
+  justify-content: flex-start; /* 讓內容靠上 */
+  padding-top: 50px; /* 頂部留白 */
+  box-sizing: border-box; /* 確保padding不會撐大元素 */
+}
+
+/* 遊戲資訊區塊 */
+.game-info {
+  position: absolute;
+  top: 50px;
+  text-align: center;
+  width: 100%;
+  z-index: 10; /* 確保文字在主角和敵人之上 */
+}
+
+.narration-text {
+  font-size: 1.8em;
+  margin-bottom: 10px;
+  color: #FFDDC1; /* 更亮的顏色 */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* 陰影讓文字更突出 */
+}
+
+.hint-text {
+  font-size: 1.2em;
+  color: #B0C4DE; /* 提示文字顏色 */
+}
+
+/* 輸入框和按鈕樣式 - 從 .container 中分離出來，直接應用在 startScreen 內 */
+#startScreen h1 {
+  font-size: 2.2em; /* 標題字體大小 */
+  margin-bottom: 30px; /* 標題下方間距 */
+  color: #BBDEFB; /* 標題顏色，更亮一點的藍色 */
+}
+
+#startScreen .input-group {
+  margin-bottom: 30px; /* 輸入框組下方間距 */
+  display: flex;
+  flex-direction: column; /* 讓輸入框垂直排列 */
+  gap: 15px; /* 輸入框之間的間距 */
+  width: 90%; /* 響應式寬度 */
+  max-width: 400px; /* 限制輸入框組最大寬度 */
+}
+
+#startScreen input[type="text"] {
+  width: calc(100% - 24px); /* 考慮padding和border，確保佔滿父容器 */
+  padding: 12px;
+  border: 1px solid #4A6572; /* 邊框顏色 */
+  border-radius: 8px; /* 圓角 */
+  background-color: #3A4E60; /* 輸入框背景色 */
+  color: #E0E0E0; /* 輸入文字顏色 */
+  font-size: 1.1em;
+  outline: none; /* 移除點擊時的藍色外框 */
+  transition: border-color 0.3s ease; /* 過渡效果 */
+}
+
+#startScreen input[type="text"]::placeholder {
+  color: #A0A0A0; /* placeholder文字顏色 */
+}
+
+#startScreen input[type="text"]:focus {
+  border-color: #BBDEFB; /* 點擊時邊框變色 */
 }
 
 #startScreen button {
-    padding: 10px 20px;
-    font-size: 1.2rem;
-    background-color: #0f0;
-    border: none;
-    cursor: pointer;
-    margin-top: 20px;
-    color: black;
+  background-color: #4CAF50; /* 按鈕的綠色 */
+  color: white; /* 文字顏色 */
+  padding: 15px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.2em;
+  cursor: pointer; /* 滑鼠游標變成手型 */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* 過渡效果 */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 按鈕陰影 */
 }
 
-#gameOverScreen,
-#leaderboardScreen {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    z-index: 2;
+#startScreen button:hover {
+  background-color: #45A049; /* 滑鼠懸停時顏色變深 */
+  transform: translateY(-2px); /* 輕微上移效果 */
 }
 
-#gameOverScreen button,
-#leaderboardScreen button {
-    padding: 10px 20px;
-    font-size: 1.2rem;
-    background-color: #0f0;
-    border: none;
-    cursor: pointer;
-    margin-top: 20px;
-    color: black;
+#startScreen button:active {
+  transform: translateY(0); /* 點擊時恢復位置 */
 }
 
-#leaderboard {
-    list-style-type: none;
-    padding: 0;
+/* 主角樣式 */
+.player {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 居中 */
+  width: 150px; /* 身體大小 */
+  height: 150px;
+  background-color: #D3D3D3; /* 淡灰色 */
+  border-radius: 50%; /* 圓形 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3); /* 陰影 */
+  z-index: 5; /* 確保在敵人之下 */
+  transition: left 0.1s linear, top 0.1s linear; /* 平滑移動 */
 }
 
-#leaderboard li {
-    padding: 5px 0;
-    border-bottom: 1px solid #555;
-    width: 300px;
-    text-align: center;
+.player-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden; /* 確保眼睛和嘴巴不超出圓形 */
 }
 
-#leaderboard li:last-child {
-    border-bottom: none;
+.player-eye {
+  position: absolute;
+  width: 25px; /* 眼睛大小 */
+  height: 25px;
+  background-color: #333; /* 眼睛顏色 */
+  border-radius: 50%;
+  top: 40%; /* 眼睛位置 */
+  transform: translateY(-50%);
+  transition: transform 0.05s ease-out; /* 眼睛移動的過渡 */
+}
+
+.left-eye {
+  left: 25%;
+}
+
+.right-eye {
+  right: 25%;
+}
+
+.player-mouth {
+  position: absolute;
+  width: 25px; /* 嘴巴大小 */
+  height: 5px; /* 嘴巴粗細 */
+  top: 65%; /* 嘴巴位置 */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333; /* 預設黑色 */
+  border-radius: 2px;
+  transition: all 0.15s ease-out; /* 添加過渡效果讓表情變化平滑 */
+}
+
+/* 主角開心臉 */
+.player.happy .player-mouth {
+  width: 28px; /* 嘴巴稍微寬一點 */
+  height: 8px; /* 嘴巴稍微高一點 */
+  border-radius: 0 0 15px 15px; /* 笑臉弧度 */
+  background-color: #333;
+  transform: translateX(-50%) translateY(2px); /* 稍微下移，看起來更自然 */
+}
+
+/* 主角憤怒/打擊/攻擊臉 */
+.player.attacking .player-eye {
+    width: 8px; /* 眼睛變小 */
+    height: 8px;
+    border-radius: 50%;
+    transform: none !important; /* 清除鼠標控制的偏移，確保眼睛歸位 */
+}
+
+.player.attacking .player-mouth {
+    width: 20px; /* 嘴巴變窄 */
+    height: 3px; /* 變平 */
+    border-radius: 2px; /* 直線 */
+    background-color: #333;
+    transform: translateX(-50%) translateY(5px); /* 稍微下移 */
+}
+
+
+/* ==================================== */
+/* 敵人基礎樣式 - 通用屬性 */
+/* ==================================== */
+.enemies-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* 容器不響應鼠標事件，讓鼠標事件透傳到敵人本身 */
+}
+
+.enemy {
+  position: absolute;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8em;
+  color: #333;
+  font-weight: bold;
+  z-index: 1; /* 確保在主角上方 */
+  overflow: visible; /* 允許偽元素超出邊界 */
+  pointer-events: auto; /* 敵人本身響應鼠標事件 */
+  /* transition: transform 0.1s ease-out; /* 打擊時的輕微動畫 (改為只在JS中觸發) */
+}
+
+/* 敵人被摧毀的基礎樣式 */
+.enemy-destroyed {
+  opacity: 0; /* 逐漸透明 */
+  transform: scale(0.1) rotate(720deg); /* 縮小並旋轉 */
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out; /* 通用破碎動畫 */
+}
+
+/* ==================================== */
+/* 第一階段敵人樣式 (鵝黃色圓形，帶刺) */
+/* ==================================== */
+/* 使用 :not 選擇器確保這些樣式只應用於沒有 type2 或 type1 的敵人 */
+.enemy:not(.type2):not(.type1) {
+  width: 40px; /* 第一階段敵人大小 */
+  height: 40px;
+  background-color: #FFD700; /* 黃色 */
+  border-radius: 50%; /* 基礎圓形 */
+  cursor: pointer; /* 可點擊 */
+}
+
+/* 荔枝刺刺形狀的模擬 (透過偽元素實現) - 只為第一階段敵人應用 */
+.enemy:not(.type2):not(.type1)::before {
+  content: '';
+  position: absolute;
+  top: -10px; /* 調整刺的位置 */
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background-color: #FFEB3B; /* 與敵人相同的鵝黃色 */
+  border-radius: 50%;
+  z-index: -1; /* 讓刺在敵人本體下方 */
+  /* 透過多個 box-shadow 模擬刺狀 */
+  box-shadow:
+    0px -25px 0 0px #FFD700, /* 上 */
+    0px 25px 0 0px #FFD700,  /* 下 */
+    -25px 0px 0 0px #FFD700, /* 左 */
+    25px 0px 0 0px #FFD700,  /* 右 */
+    18px 18px 0 0px #FFD700, /* 右下 */
+    -18px 18px 0 0px #FFD700, /* 左下 */
+    18px -18px 0 0px #FFD700, /* 右上 */
+    -18px -18px 0 0px #FFD700; /* 左上 */
+  filter: blur(1px); /* 輕微模糊效果 */
+  transform: scale(1); /* 初始大小 */
+  transition: transform 0.3s ease, opacity 0.3s ease; /* 為破碎動畫準備 */
+}
+
+
+/* ==================================== */
+/* 第二階段敵人樣式 (橘色三角形) */
+/* ==================================== */
+.enemy.type2 {
+  background-color: transparent; /* 三角形不需要背景色 */
+  width: 0;
+  height: 0;
+  border-left: 40px solid transparent; /* 左右邊緣 */
+  border-right: 40px solid transparent; /* 左右邊緣 */
+  border-bottom: 80px solid #FF5722; /* 橘色，作為底邊，形成三角形 */
+  border-radius: 0; /* 移除圓角 */
+  box-shadow: 0 0 15px rgba(255, 87, 34, 0.5); /* 橘色陰影 */
+  font-size: 0.9em; /* 文字稍微大一點 */
+  color: #FFF; /* 白色文字 */
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* 文字陰影 */
+  pointer-events: auto; /* 確保可點擊 */
+  transition: transform 0.1s linear; /* 平滑旋轉，速度快一些 */
+}
+
+/* 移除第二階段敵人上的刺 (如果第一階段敵人有刺) */
+.enemy.type2::before {
+  content: none; /* 移除偽元素 */
+}
+
+
+/* ==================================== */
+/* 子彈樣式 */
+/* ==================================== */
+.bullet {
+  position: absolute;
+  width: 20px; /* 子彈大小 */
+  height: 20px;
+  background-color: #3b7fff; /* 藍色子彈 */
+  border-radius: 50%;
+  z-index: 5; /* 確保子彈在敵人上方 */
+  box-shadow: 0 0 8px rgba(0, 191, 255, 0.8);
+  pointer-events: none; /* 子彈不響應鼠標事件 */
+}
+
+/* ==================================== */
+/* 第三階段敵人樣式 (紅色六角形) */
+/* ==================================== */
+.enemy.type1 { /* 從程度1的煩惱衍生，我們稱之為 type1 敵人 */
+  background-color: #E74C3C; /* 紅色 */
+  width: 100px; /* 普通六角形敵人大小 */
+  height: 100px;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); /* 六角形 */
+  box-shadow: 0 0 20px rgba(231, 76, 60, 0.7); /* 紅色光暈 */
+  font-size: 1.1em;
+  color: #FFF;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none; /* 敵人不響應鼠標事件，由JS控制碰撞 */
+  transition: transform 0.1s ease-out; /* 打擊時的輕微動畫 */
+}
+
+/* ==================================== */
+/* 第三階段 Boss 敵人樣式 (更大的紅色六角形，帶有特殊閃爍) */
+/* ==================================== */
+.enemy.type1.boss {
+  width: 150px; /* Boss 敵人更大 */
+  height: 150px;
+  background-color: #C0392B; /* 更深的紅色 */
+  box-shadow: 0 0 30px rgba(192, 57, 43, 1); /* 更強的光暈 */
+  font-size: 1.5em;
+  animation: boss-pulse 1.5s infinite alternate; /* 脈衝閃爍動畫 */
+}
+
+@keyframes boss-pulse {
+  from { box-shadow: 0 0 30px rgba(192, 57, 43, 1); transform: scale(1); }
+  to { box-shadow: 0 0 50px rgba(192, 57, 43, 0.5); transform: scale(1.05); }
+}
+
+/* ==================================== */
+/* 閃亮軌跡效果 (用於Boss被打飛) */
+/* ==================================== */
+.sparkle-trail {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: radial-gradient(circle, #FFF 0%, #FFD700 50%, transparent 100%); /* 白色到金色的漸變，中心發光 */
+  border-radius: 50%;
+  opacity: 0; /* 初始透明 */
+  animation: sparkle-fade-out 0.8s forwards; /* 向前動畫，結束時保持狀態 */
+  z-index: 10; /* 確保在最上層 */
+  pointer-events: none; /* 不影響鼠標事件 */
+}
+
+@keyframes sparkle-fade-out {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.5); }
 }

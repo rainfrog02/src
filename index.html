@@ -1,33 +1,36 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>貪食蛇遊戲</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>消滅煩惱遊戲</title>
+  <link rel="stylesheet" href="style.css"> </head>
 <body>
-    <div id="startScreen">
-        <h1>貪食蛇遊戲</h1>
-        <button id="startButton" onclick="startGame()">開始遊戲</button>
+  <div id="startScreen" class="screen active">
+    <h1>是甚麼在困擾你？在這裡消滅它們吧！</h1>
+    <div class="input-group">
+      <input type="text" id="worry1" placeholder="程度1：最困擾的..." autocomplete="off">
+      <input type="text" id="worry2" placeholder="程度2：有點困擾的..." autocomplete="off">
+      <input type="text" id="worry3" placeholder="程度3：輕微困擾的..." autocomplete="off">
     </div>
-    <canvas id="game" width="400" height="400"></canvas>
-    <div id="gameOverScreen" style="display:none;">
-        <h2>遊戲結束</h2>
-        <p>你的得分：<span id="finalScore"></span></p>
-        <label for="playerName">請輸入你的名字：</label>
-        <input type="text" id="playerName" />
-        <button id="submitScore">提交分數</button>
-        <button id="restartButton">重新開始</button>
+    <button id="startButton">開始！</button>
+  </div>
+
+  <div id="gameScreen" class="screen">
+    <div class="game-info">
+      <p id="narration" class="narration-text"></p>
+      <p id="hint" class="hint-text"></p>
     </div>
-    <div id="leaderboardScreen" style="display:none;">
-        <h2>排行榜</h2>
-        <ol id="leaderboard">
-        </ol>
-        <button id="backToStart">返回開始畫面</button>
+    <div id="player" class="player">
+      <div class="player-body">
+        <div class="player-eye left-eye"></div>
+        <div class="player-eye right-eye"></div>
+        <div class="player-mouth"></div>
+      </div>
     </div>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="script.js"></script>
-</body>
+    <div id="enemiesContainer" class="enemies-container">
+    </div>
+  </div>
+
+  <script src="script.js"></script> </body>
 </html>
