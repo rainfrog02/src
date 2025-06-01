@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const BORDER_BUFFER = 20; // 敵人初始生成時，離開畫面邊緣的緩衝區 (像素)
 
     // 第一階段敵人參數
-    const TOTAL_ENEMIES_LEVEL_3 = 35; // 第一階段煩惱（程度3）的總數
-    const ENEMY_SPAWN_INTERVAL = 1000; // 第一階段每個敵人出現的間隔時間（毫秒）
+    const TOTAL_ENEMIES_LEVEL_3 = 25; // 第一階段煩惱（程度3）的總數
+    const ENEMY_SPAWN_INTERVAL = 1100; // 第一階段每個敵人出現的間隔時間（毫秒）
     const PLAYER_CLOSE_DISTANCE = 50; // 敵人與主角多近時算接觸（單位：像素），會被移除
 
     // 第二階段敵人參數
@@ -39,11 +39,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const PLAYER_ATTACK_COOLDOWN = 100; // 攻擊冷卻時間（毫秒），避免連發過快
 
     // 第三階段參數 (新增)
-    const TOTAL_ENEMIES_LEVEL_1_SMALL = 20; // 第三階段小敵人數量
+    const TOTAL_ENEMIES_LEVEL_1_SMALL = 40 ; // 第三階段小敵人數量
     const ENEMY_SPAWN_INTERVAL_STAGE3 = 1000; // 第三階段敵人生成間隔
     const PLAYER_MOVE_SPEED = 5; // 主角移動速度
+    const ENEMY_STAGE3_MOVE_SPEED = 100; // 第三階段敵人移動速度（比主角快一些）
+    const ENEMY_STAGE3_BOSS_MOVE_SPEED = 80; // 第三階段大敵人移動速度（略慢於小敵人）
     const PLAYER_HIT_COOLDOWN = 200; // 主角打擊敵人的時間間隔 (毫秒) (新增)
-    const HIT_FORCE = 30; // 敵人被打飛的初始速度（像素/幀）
     // const BOSS_TELEPORT_INTERVAL = 2000; // Boss 瞬移間隔（毫秒）  <-- 移除 Boss 邏輯
     // const BOSS_HIT_EFFECT_DURATION = 1000; // Boss 被打飛後的特效持續時間（毫秒） <-- 移除 Boss 邏輯
 
@@ -91,6 +92,10 @@ document.addEventListener('DOMContentLoaded', () => {
         startScreen.classList.remove('active');
         gameScreen.classList.add('active');
 
+        // === 新增：切換到第一階段背景 ===
+        document.body.classList.remove('stage2-background', 'stage3-background', 'victory-background');
+        document.body.classList.add('stage1-background');
+
         // 初始化主角位置到中心 (第三階段需要)
         playerX = gameScreen.offsetWidth / 2 - player.offsetWidth / 2;
         playerY = gameScreen.offsetHeight / 2 - player.offsetHeight / 2;
@@ -102,8 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
         gameScreen.addEventListener('mousemove', playerEyeControl);
 
         // 設置遊戲初始文字
-        narrationText.textContent = "雖然不嚴重...但擺在那邊就是很煩🙄 這邊建議直接送它下線💥";
-        hintText.textContent = "提示：用鼠標點爆敵人！💥";
+        narrationText.textContent = "這些小東西，堆在一起也很煩對吧？🙄 這邊建議先送它們下去💥";
+        hintText.textContent = "提示：用鼠標點擊敵人！";
 
         // 延遲3秒後開始分批生成第一階段敵人 (給玩家一個準備時間)
         setTimeout(() => {
@@ -183,88 +188,86 @@ document.addEventListener('DOMContentLoaded', () => {
     // 生成單個第一階段敵人的函數
     function generateSingleEnemy(worryText) {
         const enemy = document.createElement('div');
-        enemy.classList.add('enemy'); // 預設就是第一階段敵人
-        enemy.textContent = worryText; // 顯示程度3的煩惱名稱
+        enemy.classList.add('enemy');
+        enemy.textContent = worryText;
 
-        const gameWidth = gameScreen.offsetWidth; // 遊戲畫面寬度
-        const gameHeight = gameScreen.offsetHeight; // 遊戲畫面高度
+        const gameWidth = gameScreen.offsetWidth;
+        const gameHeight = gameScreen.offsetHeight;
 
         let startX, startY;
-        const side = Math.floor(Math.random() * 4); // 隨機選擇從哪條邊緣出現 (0: top, 1: right, 2: bottom, 3: left)
-
-        // 根據選擇的邊緣計算起始位置，確保敵人完全在畫面外
+        const side = Math.floor(Math.random() * 4);
         switch (side) {
-            case 0: // 從上方邊緣出現
-                startX = Math.random() * (gameWidth - ENEMY_SIZE); // 隨機 X 軸位置
-                startY = -ENEMY_SIZE - BORDER_BUFFER; // 在畫面頂部之外
+            case 0: // 上
+                startX = Math.random() * (gameWidth - ENEMY_SIZE);
+                startY = -ENEMY_SIZE - BORDER_BUFFER;
                 break;
-            case 1: // 從右方邊緣出現
-                startX = gameWidth + BORDER_BUFFER; // 在畫面右側之外
-                startY = Math.random() * (gameHeight - ENEMY_SIZE); // 隨機 Y 軸位置
+            case 1: // 右
+                startX = gameWidth + BORDER_BUFFER;
+                startY = Math.random() * (gameHeight - ENEMY_SIZE);
                 break;
-            case 2: // 從下方邊緣出現
-                startX = Math.random() * (gameWidth - ENEMY_SIZE); // 隨機 X 軸位置
-                startY = gameHeight + BORDER_BUFFER; // 在畫面底部之外
+            case 2: // 下
+                startX = Math.random() * (gameWidth - ENEMY_SIZE);
+                startY = gameHeight + BORDER_BUFFER;
                 break;
-            case 3: // 從左方邊緣出現
-                startX = -ENEMY_SIZE - BORDER_BUFFER; // 在畫面左側之外
-                startY = Math.random() * (gameHeight - ENEMY_SIZE); // 隨機 Y 軸位置
+            case 3: // 左
+                startX = -ENEMY_SIZE - BORDER_BUFFER;
+                startY = Math.random() * (gameHeight - ENEMY_SIZE);
                 break;
         }
 
-        enemy.style.left = `${startX}px`;
-        enemy.style.top = `${startY}px`;
+        // 用變數追蹤敵人座標
+        let enemyX = startX;
+        let enemyY = startY;
+        enemy.style.left = `${enemyX}px`;
+        enemy.style.top = `${enemyY}px`;
+        enemiesContainer.appendChild(enemy);
 
-        enemiesContainer.appendChild(enemy); // 將敵人添加到遊戲畫面中
+        // 速度參數
+        const baseSpeed = 120; // 每秒像素
+        let lastTime = performance.now();
 
-        // 敵人移動邏輯 (使用 requestAnimationFrame 實現流暢動畫)
-        const moveEnemy = () => {
-            // 如果敵人已經被移除（例如被點擊），則停止移動
+        function moveEnemy(now) {
             if (!enemy.parentElement) return;
 
-            const enemyRect = enemy.getBoundingClientRect(); // 敵人當前位置和大小
-            const playerRect = player.getBoundingClientRect(); // 主角當前位置和大小
+            const deltaTime = (now - lastTime) / 1000;
+            lastTime = now;
 
-            // 計算主角和敵人的中心點
+            // 主角中心
+            const playerRect = player.getBoundingClientRect();
             const playerCenterX = playerRect.left + playerRect.width / 2;
             const playerCenterY = playerRect.top + playerRect.height / 2;
-            const enemyCenterX = enemyRect.left + enemyRect.width / 2;
-            const enemyCenterY = enemyRect.top + enemyRect.height / 2;
 
-            // 計算敵人到主角的向量和距離
+            // 敵人中心
+            const enemyCenterX = enemyX + ENEMY_SIZE / 2;
+            const enemyCenterY = enemyY + ENEMY_SIZE / 2;
+
             const dx = playerCenterX - enemyCenterX;
             const dy = playerCenterY - enemyCenterY;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
-            // 調整敵人的移動速度
-            const baseSpeed = 0.5; // 基本移動速度
-            // 速度可以根據已生成敵人的數量來調整，例如，後期敵人會稍微快一點
-            const speed = baseSpeed + (enemiesGeneratedCount / TOTAL_ENEMIES_LEVEL_3) * 0.3;
+            // 亂飄效果（幅度小一點）
+            const driftMagnitude = 1.2;
+            const driftX = (Math.random() - 0.5) * driftMagnitude;
+            const driftY = (Math.random() - 0.5) * driftMagnitude;
 
-            // 計算新的敵人位置 (除以 60 模擬每秒 60 幀)
-            let newX = enemy.offsetLeft + dx * speed / 60;
-            let newY = enemy.offsetTop + dy * speed / 60;
-
-            // 加入亂飄效果 (隨機的小範圍偏移，讓移動更自然)
-            const driftMagnitude = 2; // 亂飄幅度
-            newX += (Math.random() - 0.5) * driftMagnitude;
-            newY += (Math.random() - 0.5) * driftMagnitude;
-
-            enemy.style.left = `${newX}px`;
-            enemy.style.top = `${newY}px`;
-
-            // 判斷敵人是否與主角足夠接近，如果是則移除敵人 (表示被煩惱纏繞)
-            if (distance < PLAYER_CLOSE_DISTANCE) {
-                enemy.remove();
-                // 這裡可以添加主角被煩惱纏繞後的負面視覺效果或遊戲懲罰
-                // 例如：player.classList.add('distressed'); setTimeout(() => player.classList.remove('distressed'), 500);
-                checkGameProgress(); // 敵人被移除後，檢查遊戲進度
+            // 移動
+            if (distance > 1) {
+                enemyX += (dx / distance) * baseSpeed * deltaTime + driftX;
+                enemyY += (dy / distance) * baseSpeed * deltaTime + driftY;
+                enemy.style.left = `${enemyX}px`;
+                enemy.style.top = `${enemyY}px`;
             }
 
-            requestAnimationFrame(moveEnemy); // 請求下一幀動畫
-        };
+            // 碰撞判斷
+            if (distance < PLAYER_CLOSE_DISTANCE) {
+                enemy.remove();
+                checkGameProgress();
+                return;
+            }
 
-        requestAnimationFrame(moveEnemy); // 開始移動動畫
+            requestAnimationFrame(moveEnemy);
+        }
+        requestAnimationFrame(moveEnemy);
     }
 
     // ===== 第二階段敵人生成與分批出現控制 =====
@@ -666,42 +669,44 @@ document.addEventListener('DOMContentLoaded', () => {
         const gameWidth = gameScreen.offsetWidth;
         const gameHeight = gameScreen.offsetHeight;
         const enemySize = 100; // 需與 CSS 中的 type1 寬高一致
-        const playerRect = player.getBoundingClientRect(); // 用於避開主角初始位置
-
+        const playerRect = player.getBoundingClientRect();
 
         let startX, startY;
-        // 嘗試在遠離主角的位置生成敵人
         for (let i = 0; i < 50; i++) {
             startX = Math.random() * (gameWidth - enemySize);
             startY = Math.random() * (gameHeight - enemySize);
             const dist = Math.sqrt(Math.pow(startX - playerRect.left, 2) + Math.pow(startY - playerRect.top, 2));
-            if (dist > 200) break; // 距離主角 200px 以上
+            if (dist > 200) break;
         }
 
         enemy.style.left = `${startX}px`;
         enemy.style.top = `${startY}px`;
         enemiesContainer.appendChild(enemy);
 
-        // 敵人隨機走動邏輯
+        // ====== 速度修正：每秒 320px，幀率獨立 ======
         let currentEnemyX = startX;
         let currentEnemyY = startY;
         let targetX = Math.random() * (gameWidth - enemySize);
         let targetY = Math.random() * (gameHeight - enemySize);
-        const moveSpeed = 0.8; // 敵人移動速度
+        const moveSpeed = 320; // 每秒移動 320px，明顯比前兩階段快
+        let lastTime = performance.now();
 
-        const moveEnemy = () => {
-            if (!enemy.parentElement || enemy.classList.contains('enemy-destroyed')) return; // 敵人不存在或已被摧毀，停止移動
+        const moveEnemy = (now) => {
+            if (!enemy.parentElement || enemy.classList.contains('enemy-destroyed')) return;
+
+            const deltaTime = (now - lastTime) / 1000; // 秒
+            lastTime = now;
 
             const dx = targetX - currentEnemyX;
             const dy = targetY - currentEnemyY;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
-            if (distance < 5) { // 接近目標點，設置新目標
+            if (distance < 5) {
                 targetX = Math.random() * (gameWidth - enemySize);
                 targetY = Math.random() * (gameHeight - enemySize);
             } else {
-                currentEnemyX += (dx / distance) * moveSpeed;
-                currentEnemyY += (dy / distance) * moveSpeed;
+                currentEnemyX += (dx / distance) * moveSpeed * deltaTime;
+                currentEnemyY += (dy / distance) * moveSpeed * deltaTime;
             }
             enemy.style.left = `${currentEnemyX}px`;
             enemy.style.top = `${currentEnemyY}px`;
@@ -714,29 +719,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // 生成一個特殊 Type1 敵人 (原 Boss，現在只是大號 Type1)
     function generateSpecialEnemyType1(worryText) {
         const specialEnemy = document.createElement('div');
-        specialEnemy.classList.add('enemy', 'type1', 'boss'); // 仍然給它 boss class，以便在 CSS 中區分樣式
+        specialEnemy.classList.add('enemy', 'type1', 'boss');
         specialEnemy.textContent = worryText;
 
         const gameWidth = gameScreen.offsetWidth;
         const gameHeight = gameScreen.offsetHeight;
-        const enemySize = 150; // 與 CSS 中的 boss 寬高一致
+        const enemySize = 150;
 
-        // 初始位置在畫面中心附近
         let startX = gameWidth / 2 - enemySize / 2;
         let startY = gameHeight / 2 - enemySize / 2;
         specialEnemy.style.left = `${startX}px`;
         specialEnemy.style.top = `${startY}px`;
         enemiesContainer.appendChild(specialEnemy);
 
-        // 這個大敵人也將像普通 type1 敵人一樣隨機移動
+        // ====== Boss 速度修正：每秒 220px，幀率獨立 ======
         let currentEnemyX = startX;
         let currentEnemyY = startY;
         let targetX = Math.random() * (gameWidth - enemySize);
         let targetY = Math.random() * (gameHeight - enemySize);
-        const moveSpeed = 0.6; // 大敵人移動速度可以慢一點
+        const moveSpeed = 220; // Boss 每秒 220px
+        let lastTime = performance.now();
 
-        const moveEnemy = () => {
+        const moveEnemy = (now) => {
             if (!specialEnemy.parentElement || specialEnemy.classList.contains('enemy-destroyed')) return;
+
+            const deltaTime = (now - lastTime) / 1000;
+            lastTime = now;
 
             const dx = targetX - currentEnemyX;
             const dy = targetY - currentEnemyY;
@@ -746,8 +754,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 targetX = Math.random() * (gameWidth - enemySize);
                 targetY = Math.random() * (gameHeight - enemySize);
             } else {
-                currentEnemyX += (dx / distance) * moveSpeed;
-                currentEnemyY += (dy / distance) * moveSpeed;
+                currentEnemyX += (dx / distance) * moveSpeed * deltaTime;
+                currentEnemyY += (dy / distance) * moveSpeed * deltaTime;
             }
             specialEnemy.style.left = `${currentEnemyX}px`;
             specialEnemy.style.top = `${currentEnemyY}px`;
@@ -771,9 +779,10 @@ document.addEventListener('DOMContentLoaded', () => {
             currentStage = 2; // 進入第二階段
             document.body.classList.remove('stage1-background', 'stage3-background', 'victory-background');
             document.body.classList.add('stage2-background');
-            narrationText.textContent = "好欸～第一波煩惱已經掰掰！🎉 這點程度也想煩你?慢走不送👋";
+            narrationText.textContent = "好欸～🎉 不錯嘛😉但接下來還有更煩人的要處理，加油";
             hintText.textContent = "提示：游標決定方向，按空白鍵發射子彈！";
             player.classList.remove('happy'); // 移除開心狀態
+              launchConfetti();
             
             // 清除第一階段敵人生成計時器
             if (spawnIntervalId) {
@@ -792,9 +801,10 @@ document.addEventListener('DOMContentLoaded', () => {
             currentStage = 3; // 進入第三階段
             document.body.classList.remove('stage1-background', 'stage2-background', 'victory-background');
             document.body.classList.add('stage3-background');
-            narrationText.textContent = "第二煩人的終於退場了👏 現在要面對你腦子裡一直repeat的那個超討厭的鬼東西👹!";
+            narrationText.textContent = "第二煩人的終於退場了👏 接下來這東西你忍很久了吧？終於輪到它了👹!";
             hintText.textContent = "提示：WASD 或方向鍵移動，靠近敵人按 Enter吞噬他們！";
             player.classList.remove('attacking'); // 移除攻擊狀態
+              launchConfetti();
             
             // 清除第二階段敵人生成計時器
             if (spawnIntervalIdStage2) {
@@ -820,8 +830,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // 第三階段結束條件：所有 Type1 敵人（包括 Boss）都被清除
         else if (currentStage === 3 && remainingEnemiesStage3OnScreen === 0 && enemiesGeneratedCountStage3 >= TOTAL_ENEMIES_LEVEL_1_SMALL) {
-            narrationText.textContent = "恭喜你清光全場🥳現實雖然沒辦法像這樣點幾下就讓煩惱消失，" +
-                "但你今天願意點開這遊戲、正視那些讓你不爽的事，就已經很厲害了啦👏";
+            narrationText.textContent = "🎉 全！部！清！光！ Respect ✨🥳" +
+                "你今天願意點開這遊戲、正視那些煩惱就已經很厲害啦👏祝你現實生活也一樣打怪順利~";
             document.body.classList.remove('stage1-background', 'stage2-background', 'stage3-background');
             document.body.classList.add('victory-background');
             hintText.textContent = "";
@@ -882,7 +892,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (remainingBoss > 0) {
                  narrationText.textContent = "與其讓它一直在身邊，主動前往消滅它吧！💥";
             } else {
-                 narrationText.textContent = "解決它們!👊👊🔥🔥";
+                 narrationText.textContent = "GoGO!消滅它們!👊👊🔥🔥";
             }
             hintText.textContent = "提示：WASD 或方向鍵移動，靠近敵人按 Enter 吞噬它們！";
         }
@@ -917,7 +927,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const db = firebase.database();
     db.ref("leaderboard")
       .orderByChild("timeMs")
-      .limitToFirst(10)
+      .limitToFirst(5)
       .once("value")
       .then(snapshot => {
         let html = "<h2>排行榜</h2><ol>";

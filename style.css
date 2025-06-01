@@ -12,21 +12,30 @@ body {
 /* 階段背景 (將類別應用到 body 上，以便影響整個遊戲區域) */
 body.stage1-background {
   background-color: #908678; /* 第一階段背景色 */
-  background-image: none; /* 確保沒有圖片，如果之前有 */
+  background-image: url('gif/階段1.gif'); /* 使用已存的GIF作為背景 */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
 }
 
 body.stage2-background {
-  background-color: #9a9c92; /* 第二階段背景色  */
-  background-image: none;
+  background-color: #30312c; /* 第二階段背景色  */
+background-image: url('https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2xkZ3lmZGM5anZqYnYxemRxY3NzaTJvcTZ4amwzZmFieWExY3FndCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/CJzxNL0RLzx7qqeI0F/giphy.gif'); /* 請將這裡的網址替換為你的GIF網址 */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
 }
 
 body.stage3-background {
   background-color: #5c4559; /* 第三階段背景色  */
-  background-image: none;
+  background-image: url('gif/混亂3.gif'); /* 使用已存的GIF作為背景 */
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
 }
 
 body.victory-background {
-  background: linear-gradient(135deg, #ffe0f7 0%, #ffd6e0 100%);
+  background: url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExenJzZGl0ZWNpdXJteWdsOWI4ZjN0M3AxbXl4Ync0MnJ5ZHBuamR6aSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/13NOyaMNX5UZYk/giphy.gif') center center / cover no-repeat;
   transition: background 1s;
 }
 
@@ -59,9 +68,8 @@ body.victory-background {
 
 /* 開始畫面特有樣式 */
 #startScreen {
-    /* 這裡不再需要 background-color，由 body 控制 */
-    /* 確保 startScreen 內容居中，因為它是初始顯示的 */
-    background-color: #1A2B3C; /* 開始畫面仍然需要自己的背景色，不讓body的背景影響 */
+  /* 使用 GIF 作為背景 */
+  background: url('gif/爆破背景.gif') center center / cover no-repeat;
 }
 
 /* 遊戲畫面特有樣式 */
@@ -167,6 +175,8 @@ body.victory-background {
   box-shadow: 0 0 10px rgba(129, 109, 104, 0.39); /* 陰影 */
   z-index: 5; /* 確保在敵人之下 */
   transition: left 0.1s linear, top 0.1s linear; /* 平滑移動 */
+  /* 保證主角在 .screen 或 #gameScreen 內絕對定位時能正確居中 */
+  pointer-events: none; /* 防止主角擋住滑鼠事件 */
 }
 
 .player-body {
@@ -273,37 +283,27 @@ body.victory-background {
 /* ==================================== */
 /* 使用 :not 選擇器確保這些樣式只應用於沒有 type2 或 type1 的敵人 */
 .enemy:not(.type2):not(.type1) {
-  width: 40px; /* 第一階段敵人大小 */
-  height: 40px;
-  background-color: #FFD700; /* 黃色 */
-  border-radius: 50%; /* 基礎圓形 */
-  cursor: pointer; /* 可點擊 */
+  width: 72px;
+  height: 64px;
+  background: radial-gradient(ellipse 60% 50% at 60% 40%, #5eea7a 80%, #4caf50 100%);
+  border-radius: 60% 45% 55% 65% / 55% 60% 45% 65%;
+  box-shadow: 0 0 18px 4px #7fff7f88, 0 0 32px 8px #00ff6e33;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  font-size: 1em;
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 1px 1px 4px #1b3a1b88;
+  z-index: 2;
+  transition: border-radius 0.3s, background 0.3s;
 }
 
-/* 荔枝刺刺形狀的模擬 (透過偽元素實現) - 只為第一階段敵人應用 */
-.enemy:not(.type2):not(.type1)::before {
-  content: '';
-  position: absolute;
-  top: -10px; /* 調整刺的位置 */
-  left: -10px;
-  right: -10px;
-  bottom: -10px;
-  background-color: #FFEB3B; /* 與敵人相同的鵝黃色 */
-  border-radius: 50%;
-  z-index: -1; /* 讓刺在敵人本體下方 */
-  /* 透過多個 box-shadow 模擬刺狀 */
-  box-shadow:
-    0px -25px 0 0px #FFD700, /* 上 */
-    0px 25px 0 0px #FFD700,  /* 下 */
-    -25px 0px 0 0px #FFD700, /* 左 */
-    25px 0px 0 0px #FFD700,  /* 右 */
-    18px 18px 0 0px #FFD700, /* 右下 */
-    -18px 18px 0 0px #FFD700, /* 左下 */
-    18px -18px 0 0px #FFD700, /* 右上 */
-    -18px -18px 0 0px #FFD700; /* 左上 */
-  filter: blur(1px); /* 輕微模糊效果 */
-  transform: scale(1); /* 初始大小 */
-  transition: transform 0.3s ease, opacity 0.3s ease; /* 為破碎動畫準備 */
+.enemy:not(.type2):not(.type1)::before,
+.enemy:not(.type2):not(.type1)::after {
+  content: none;
 }
 
 
@@ -311,24 +311,38 @@ body.victory-background {
 /* 第二階段敵人樣式 (橘色三角形) */
 /* ==================================== */
 .enemy.type2 {
-  background-color: transparent; /* 三角形不需要背景色 */
-  width: 0;
-  height: 0;
-  border-left: 40px solid transparent; /* 左右邊緣 */
-  border-right: 40px solid transparent; /* 左右邊緣 */
-  border-bottom: 80px solid #ff6333; /* 橘色，作為底邊，形成三角形 */
-  border-radius: 0; /* 移除圓角 */
-  box-shadow: 0 0 15px rgba(255, 87, 34, 0.5); /* 橘色陰影 */
-  font-size: 1.1em; /* 文字稍微大一點 */
-  color: #FFF; /* 白色文字 */
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* 文字陰影 */
-  pointer-events: auto; /* 確保可點擊 */
-  transition: transform 0.1s linear; /* 平滑旋轉，速度快一些 */
+  width: 80px;
+  height: 80px;
+  background: #ff6333;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.1em;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+  box-shadow: 0 0 18px 4px rgba(255, 99, 51, 0.45);
+  border-radius: 10px;
+  pointer-events: auto;
+  position: absolute;
+  /* 菱形效果 */
+  transform: rotate(45deg);
+  transition: transform 0.1s linear;
+  overflow: visible;
+}
+
+/* 讓文字正向顯示 */
+.enemy.type2 > span,
+.enemy.type2 > div,
+.enemy.type2 > p {
+  transform: rotate(-45deg);
+  display: block;
+  width: 100%;
+  text-align: center;
 }
 
 /* 移除第二階段敵人上的刺 (如果第一階段敵人有刺) */
 .enemy.type2::before {
-  content: none; /* 移除偽元素 */
+  content: none;
 }
 
 
@@ -354,7 +368,7 @@ body.victory-background {
   width: 100px; /* 普通六角形敵人大小 */
   height: 100px;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); /* 六角形 */
-  box-shadow: 0 0 20px rgb(255, 99, 99); /* 紅色光暈 */
+  box-shadow: 0 0 20px 8px rgba(255, 99, 99, 0.45), 0 0 40px 0px rgba(255, 0, 0, 0.18); /* 微紅光暈 */
   font-size: 1.5em;
   color: #FFF;
   text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
@@ -362,7 +376,17 @@ body.victory-background {
   justify-content: center;
   align-items: center;
   pointer-events: none; /* 敵人不響應鼠標事件，由JS控制碰撞 */
-  transition: transform 0.1s ease-out; /* 打擊時的輕微動畫 */
+  transition: transform 0.1s ease-out, box-shadow 0.4s; /* 打擊時的輕微動畫 */
+  animation: red-glow 1.2s infinite alternate;
+}
+
+@keyframes red-glow {
+  from {
+    box-shadow: 0 0 20px 8px rgba(255, 99, 99, 0.45), 0 0 40px 0px rgba(255, 0, 0, 0.18);
+  }
+  to {
+    box-shadow: 0 0 32px 16px rgba(255, 99, 99, 0.7), 0 0 60px 8px rgba(255, 0, 0, 0.28);
+  }
 }
 
 /* ==================================== */
@@ -372,7 +396,7 @@ body.victory-background {
   width: 150px; /* Boss 敵人更大 */
   height: 150px;
   background-color: #C0392B; /* 更深的紅色 */
-  box-shadow: 0 0 30px rgba(192, 57, 43, 1); /* 更強的光暈 */
+  box-shadow: 0 0 30px rgb(255, 139, 126); /* 更強的光暈 */
   font-size: 1.5em;
   animation: boss-pulse 1.5s infinite alternate; /* 脈衝閃爍動畫 */
 }
@@ -409,28 +433,28 @@ body.victory-background {
 }
 
 #leaderboard {
-   position: fixed;
+  position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(103, 227, 255, 0.95); /* 半透明白底 */
+  transform: translate(-50%, -50%) scale(0.7); /* 縮小 30% */
+  background: rgb(177 235 235 / 95%);
   border-radius: 18px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.18);
   padding: 28px 24px 20px 24px;
   z-index: 20000;
-  color: #d72660;            /* 主要字色 */
+  color: #d72660;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 1.15em;
-  display: none;             /* 預設隱藏，由JS控制顯示 */
+  display: none;
 }
 
 #leaderboard h2 {
   margin-top: 0;
-    margin-bottom: 18px;
-    font-size: 1.5em;
-    color: #ffffff;
-    text-align: center;
-    letter-spacing: 2px;
+   margin-bottom: 18px;
+   font-size: 1.5em;
+   color: #ffffff;
+   text-align: center;
+   letter-spacing: 2px;
 }
 
 #leaderboard ol {
@@ -451,18 +475,18 @@ body.victory-background {
 
 #leaderboard li:first-child {
   background: #ffffff;
-    color: #002dff;
-    font-weight: bold;
-    font-size: 1.18em;
-    border: 2px solid #002dff;
+   color: #002dff;
+   font-weight: bold;
+   font-size: 1.18em;
+   border: 2px solid #002dff;
 }
 
 #leaderboard li:nth-child(2) {
   background: #ffffffa8;
-    color: #101010;
+   color: #101010;
 }
 
 #leaderboard li:nth-child(3) {
   background: #ffffffa8;
-    color: #101010;
+   color: #101010;
 }
