@@ -245,10 +245,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const dy = playerCenterY - enemyCenterY;
             const distance = Math.sqrt(dx * dx + dy * dy);
 
-            // 亂飄效果（幅度小一點）
-            const driftMagnitude = 1.2;
-            const driftX = (Math.random() - 0.5) * driftMagnitude;
-            const driftY = (Math.random() - 0.5) * driftMagnitude;
+            // 不要亂飄，直接朝主角移動
+            const driftX = 0;
+            const driftY = 0;
 
             // 移動
             if (distance > 1) {
