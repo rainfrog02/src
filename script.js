@@ -27,12 +27,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 第一階段敵人參數
     const TOTAL_ENEMIES_LEVEL_3 = 25; // 第一階段煩惱（程度3）的總數
-    const ENEMY_SPAWN_INTERVAL = 1100; // 第一階段每個敵人出現的間隔時間（毫秒）
+    const ENEMY_SPAWN_INTERVAL = 1200; // 第一階段每個敵人出現的間隔時間（毫秒）
     const PLAYER_CLOSE_DISTANCE = 50; // 敵人與主角多近時算接觸（單位：像素），會被移除
 
     // 第二階段敵人參數
-    const TOTAL_ENEMIES_LEVEL_2 = 40; // 第二階段煩惱（程度2）的總數
-    const ENEMY_SPAWN_INTERVAL_STAGE2 = 800; // 第二階段敵人出現的間隔時間（毫秒）
+    const TOTAL_ENEMIES_LEVEL_2 = 35; // 第二階段煩惱（程度2）的總數
+    const ENEMY_SPAWN_INTERVAL_STAGE2 = 900; // 第二階段敵人出現的間隔時間（毫秒）
     const BULLET_SPEED = 15; // 子彈移動速度
     const BULLET_SIZE = 10; // 子彈大小 (需與 style.css 中 .bullet 的 width/height 保持一致)
     const STAGE_TRANSITION_DELAY = 5000; // 階段轉換的等待時間（毫秒），例如 5 秒
@@ -46,8 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const BASE_ENEMY_SPEED = 120; // 第一階段敵人每秒像素
     const ENEMY_STAGE3_BOSS_MOVE_SPEED = 80; // 第三階段大敵人移動速度（略慢於小敵人）
     const PLAYER_HIT_COOLDOWN = 200; // 主角打擊敵人的時間間隔 (毫秒) (新增)
-    // const BOSS_TELEPORT_INTERVAL = 2000; // Boss 瞬移間隔（毫秒）  <-- 移除 Boss 邏輯
-    // const BOSS_HIT_EFFECT_DURATION = 1000; // Boss 被打飛後的特效持續時間（毫秒） <-- 移除 Boss 邏輯
+   
 
     let currentStage = 1; // 追蹤當前遊戲階段，1為第一階段，2為第二階段，3為第三階段
     let enemiesGeneratedCount = 0; // 第一階段已生成的敵人總數
@@ -198,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let startX, startY;
         const side = Math.floor(Math.random() * 4);
         switch (side) {
-            case 0: // 上
+            case 0: // Top side of the screen
                 startX = Math.random() * (gameWidth - ENEMY_SIZE);
                 startY = -ENEMY_SIZE - BORDER_BUFFER;
                 break;
@@ -216,31 +215,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
         }
 
-        // 初始座標
+        // 用變數追蹤敵人座標
         let enemyX = startX;
         let enemyY = startY;
         enemy.style.left = `${enemyX}px`;
         enemy.style.top = `${enemyY}px`;
         enemiesContainer.appendChild(enemy);
 
-        // 計算初始時主角中心座標
-        const getPlayerCenter = () => ({
-            x: playerX + player.offsetWidth / 2,
-            y: playerY + player.offsetHeight / 2
-        });
-
-        // 計算從敵人中心指向主角中心的單位向量
-        const getDirection = () => {
-            const playerCenter = getPlayerCenter();
-            const enemyCenterX = enemyX + ENEMY_SIZE / 2;
-            const enemyCenterY = enemyY + ENEMY_SIZE / 2;
-            const dx = playerCenter.x - enemyCenterX;
-            const dy = playerCenter.y - enemyCenterY;
-            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-            return { dx: dx / dist, dy: dy / dist, dist };
-        };
-
-        const baseSpeed = BASE_ENEMY_SPEED;
+        // 速度參數
+        const baseSpeed = BASE_ENEMY_SPEED; // 使用全局定義的每秒像素
         let lastTime = performance.now();
 
         function moveEnemy(now) {
@@ -249,19 +232,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const deltaTime = (now - lastTime) / 1000;
             lastTime = now;
 
-            // 每一幀都重新計算方向，確保敵人持續朝主角移動
-            const { dx, dy, dist } = getDirection();
+            // 用 playerX/playerY 取得主角中心（和敵人同座標系統）
+            const playerCenterX = playerX + player.offsetWidth / 2;
+            const playerCenterY = playerY + player.offsetHeight / 2;
 
-            // 只要還沒碰到主角就繼續移動
-            if (dist > 1) {
-                enemyX += dx * baseSpeed * deltaTime;
-                enemyY += dy * baseSpeed * deltaTime;
+            // 敵人中心
+            const enemyCenterX = enemyX + ENEMY_SIZE / 2;
+            const enemyCenterY = enemyY + ENEMY_SIZE / 2;
+
+            const dx = playerCenterX - enemyCenterX;
+            const dy = playerCenterY - enemyCenterY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            // 不要亂飄，直接朝主角移動
+            const driftX = 0;
+            const driftY = 0;
+
+            // 移動
+            if (distance > 1) {
+                enemyX += (dx / distance) * baseSpeed * deltaTime + driftX;
+                enemyY += (dy / distance) * baseSpeed * deltaTime + driftY;
                 enemy.style.left = `${enemyX}px`;
                 enemy.style.top = `${enemyY}px`;
             }
 
             // 碰撞判斷
-            if (dist < PLAYER_CLOSE_DISTANCE) {
+            if (distance < PLAYER_CLOSE_DISTANCE) {
                 enemy.remove();
                 checkGameProgress();
                 return;
@@ -767,7 +763,20 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(moveEnemy);
     }
 
-
+function updateEnemyCount() {
+    let text = "";
+    if (currentStage === 1) {
+        const left = enemiesContainer.querySelectorAll('.enemy:not(.type2):not(.type1)').length;
+        text = `第一階段剩餘敵人：${left}`;
+    } else if (currentStage === 2) {
+        const left = enemiesContainer.querySelectorAll('.enemy.type2').length;
+        text = `第二階段剩餘敵人：${left}`;
+    } else if (currentStage === 3) {
+        const left = enemiesContainer.querySelectorAll('.enemy.type1').length;
+        text = `第三階段剩餘敵人：${left}`;
+    }
+    document.getElementById('enemyCount').textContent = text;
+}
 
 
     // ===== 檢查遊戲進度函數 (完整替換) =====
