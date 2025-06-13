@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 第一階段敵人參數
     const TOTAL_ENEMIES_LEVEL_3 = 25; // 第一階段煩惱（程度3）的總數
-    const ENEMY_SPAWN_INTERVAL = 1200; // 第一階段每個敵人出現的間隔時間（毫秒）
+    const ENEMY_SPAWN_INTERVAL = 1100; // 第一階段每個敵人出現的間隔時間（毫秒）
     const PLAYER_CLOSE_DISTANCE = 50; // 敵人與主角多近時算接觸（單位：像素），會被移除
 
     // 第二階段敵人參數
@@ -40,10 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 第三階段參數 (新增)
     const TOTAL_ENEMIES_LEVEL_1_SMALL = 40 ; // 第三階段小敵人數量
-    const ENEMY_SPAWN_INTERVAL_STAGE3 = 1000; // 第三階段敵人生成間隔
+    const ENEMY_SPAWN_INTERVAL_STAGE3 = 2200; // 第三階段敵人生成間隔
     const PLAYER_MOVE_SPEED = 5; // 主角移動速度
-    const ENEMY_STAGE3_MOVE_SPEED = 100; // 第三階段敵人移動速度（比主角快一些）
-    const BASE_ENEMY_SPEED = 120; // 第一階段敵人每秒像素
+    const ENEMY_STAGE3_MOVE_SPEED = 80; // 第三階段敵人移動速度（比主角快一些）
+    const BASE_ENEMY_SPEED = 90; // 第一階段敵人每秒像素
     const ENEMY_STAGE3_BOSS_MOVE_SPEED = 80; // 第三階段大敵人移動速度（略慢於小敵人）
     const PLAYER_HIT_COOLDOWN = 200; // 主角打擊敵人的時間間隔 (毫秒) (新增)
    
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gameScreen.addEventListener('mousemove', playerEyeControl);
 
         // 設置遊戲初始文字
-        narrationText.textContent = "這些小東西，堆在一起也很煩對吧？🙄 這邊建議先送它們下去💥";
+        narrationText.textContent = "這些小東西，堆在一起也很煩對吧？🙄 第一階段先送它們下去!💥";
         hintText.textContent = "提示：用鼠標點擊敵人！";
 
         // 延遲3秒後開始分批生成第一階段敵人 (給玩家一個準備時間)
@@ -194,13 +194,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const gameWidth = gameScreen.offsetWidth;
         const gameHeight = gameScreen.offsetHeight;
 
+        // 只從右(1)、下(2)、左(3)三個方向隨機
+        const side = Math.floor(Math.random() * 3) + 1;
         let startX, startY;
-        const side = Math.floor(Math.random() * 4);
         switch (side) {
-            case 0: // Top side of the screen
-                startX = Math.random() * (gameWidth - ENEMY_SIZE);
-                startY = -ENEMY_SIZE - BORDER_BUFFER;
-                break;
             case 1: // 右
                 startX = gameWidth + BORDER_BUFFER;
                 startY = Math.random() * (gameHeight - ENEMY_SIZE);
@@ -790,7 +787,7 @@ function updateEnemyCount() {
             currentStage = 2; // 進入第二階段
             document.body.classList.remove('stage1-background', 'stage3-background', 'victory-background');
             document.body.classList.add('stage2-background');
-            narrationText.textContent = "好欸～🎉 不錯嘛😉但接下來還有更煩人的要處理，加油";
+            narrationText.textContent = "好欸🎉 不錯嘛😉但第二階段有更煩人的要處理，加油!";
             hintText.textContent = "提示：游標決定方向，按空白鍵發射子彈！";
             player.classList.remove('happy'); // 移除開心狀態
               launchConfetti();

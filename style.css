@@ -283,8 +283,8 @@ body.victory-background {
 /* ==================================== */
 /* 使用 :not 選擇器確保這些樣式只應用於沒有 type2 或 type1 的敵人 */
 .enemy:not(.type2):not(.type1) {
-  width: 72px;
-  height: 64px;
+  width: 90px;
+  height: 100px;
   background: radial-gradient(ellipse 60% 50% at 60% 40%, #5eea7a 80%, #4caf50 100%);
   border-radius: 60% 45% 55% 65% / 55% 60% 45% 65%;
   box-shadow: 0 0 18px 4px #7fff7f88, 0 0 32px 8px #00ff6e33;
