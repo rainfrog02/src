@@ -20,7 +20,7 @@ body.stage1-background {
 
 body.stage2-background {
   background-color: #30312c; /* 第二階段背景色  */
-  background-image: url('gif/第二關格子壓過.gif'); /* GIF 當背景 */
+  background-image: url('gif/背景2.png'); /* GIF 當背景 */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
@@ -28,7 +28,7 @@ body.stage2-background {
 
 body.stage3-background {
   background-color: #5c4559; /* 第三階段背景色  */
-  background-image: url('gif/最終關壓過.gif'); /* 使用已存的GIF作為背景 */
+  background-image: url('gif/背景3.png'); /* 使用已存的GIF作為背景 */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
