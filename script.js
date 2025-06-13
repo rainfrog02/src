@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 第三階段參數 (新增)
     const TOTAL_ENEMIES_LEVEL_1_SMALL = 40 ; // 第三階段小敵人數量
-    const ENEMY_SPAWN_INTERVAL_STAGE3 = 2200; // 第三階段敵人生成間隔
+    const ENEMY_SPAWN_INTERVAL_STAGE3 = 1900; // 第三階段敵人生成間隔
     const PLAYER_MOVE_SPEED = 5; // 主角移動速度
     const ENEMY_STAGE3_MOVE_SPEED = 80; // 第三階段敵人移動速度（比主角快一些）
     const BASE_ENEMY_SPEED = 90; // 第一階段敵人每秒像素
