@@ -12,7 +12,7 @@ body {
 /* 階段背景 (將類別應用到 body 上，以便影響整個遊戲區域) */
 body.stage1-background {
   background-color: #908678; /* 第一階段背景色 */
-  background-image: url('gif/階段1.gif'); /* 使用已存的GIF作為背景 */
+  background-image: url('gif/第一關.jpg'); /* 使用已存的GIF作為背景 */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
@@ -20,7 +20,7 @@ body.stage1-background {
 
 body.stage2-background {
   background-color: #30312c; /* 第二階段背景色  */
-background-image: url('https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2xkZ3lmZGM5anZqYnYxemRxY3NzaTJvcTZ4amwzZmFieWExY3FndCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/CJzxNL0RLzx7qqeI0F/giphy.gif'); /* 請將這裡的網址替換為你的GIF網址 */
+  background-image: url('gif/第二關格子.gif'); /* GIF 當背景 */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
@@ -28,7 +28,7 @@ background-image: url('https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2xkZ3l
 
 body.stage3-background {
   background-color: #5c4559; /* 第三階段背景色  */
-  background-image: url('gif/混亂3.gif'); /* 使用已存的GIF作為背景 */
+  background-image: url('gif/最終關.gif'); /* 使用已存的GIF作為背景 */
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
@@ -279,7 +279,7 @@ body.victory-background {
 }
 
 /* ==================================== */
-/* 第一階段敵人樣式 (鵝黃色圓形，帶刺) */
+/* 第一階段敵人樣式
 /* ==================================== */
 /* 使用 :not 選擇器確保這些樣式只應用於沒有 type2 或 type1 的敵人 */
 .enemy:not(.type2):not(.type1) {
@@ -292,7 +292,6 @@ body.victory-background {
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
   font-size: 1em;
   color: #fff;
   font-weight: bold;
@@ -313,7 +312,7 @@ body.victory-background {
 .enemy.type2 {
   width: 80px;
   height: 80px;
-  background: #ff6333;
+  background: #ff8f33;
   color: #fff;
   display: flex;
   justify-content: center;

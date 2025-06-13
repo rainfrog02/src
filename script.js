@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ENEMY_SPAWN_INTERVAL_STAGE3 = 1000; // 第三階段敵人生成間隔
     const PLAYER_MOVE_SPEED = 5; // 主角移動速度
     const ENEMY_STAGE3_MOVE_SPEED = 100; // 第三階段敵人移動速度（比主角快一些）
+    const BASE_ENEMY_SPEED = 120; // 第一階段敵人每秒像素
     const ENEMY_STAGE3_BOSS_MOVE_SPEED = 80; // 第三階段大敵人移動速度（略慢於小敵人）
     const PLAYER_HIT_COOLDOWN = 200; // 主角打擊敵人的時間間隔 (毫秒) (新增)
     // const BOSS_TELEPORT_INTERVAL = 2000; // Boss 瞬移間隔（毫秒）  <-- 移除 Boss 邏輯
@@ -215,15 +216,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
         }
 
-        // 用變數追蹤敵人座標
+        // 初始座標
         let enemyX = startX;
         let enemyY = startY;
         enemy.style.left = `${enemyX}px`;
         enemy.style.top = `${enemyY}px`;
         enemiesContainer.appendChild(enemy);
 
-        // 速度參數
-        const baseSpeed = 120; // 每秒像素
+        // 計算初始時主角中心座標
+        const getPlayerCenter = () => ({
+            x: playerX + player.offsetWidth / 2,
+            y: playerY + player.offsetHeight / 2
+        });
+
+        // 計算從敵人中心指向主角中心的單位向量
+        const getDirection = () => {
+            const playerCenter = getPlayerCenter();
+            const enemyCenterX = enemyX + ENEMY_SIZE / 2;
+            const enemyCenterY = enemyY + ENEMY_SIZE / 2;
+            const dx = playerCenter.x - enemyCenterX;
+            const dy = playerCenter.y - enemyCenterY;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            return { dx: dx / dist, dy: dy / dist, dist };
+        };
+
+        const baseSpeed = BASE_ENEMY_SPEED;
         let lastTime = performance.now();
 
         function moveEnemy(now) {
@@ -232,33 +249,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const deltaTime = (now - lastTime) / 1000;
             lastTime = now;
 
-            // 主角中心
-            const playerRect = player.getBoundingClientRect();
-            const playerCenterX = playerRect.left + playerRect.width / 2;
-            const playerCenterY = playerRect.top + playerRect.height / 2;
+            // 每一幀都重新計算方向，確保敵人持續朝主角移動
+            const { dx, dy, dist } = getDirection();
 
-            // 敵人中心
-            const enemyCenterX = enemyX + ENEMY_SIZE / 2;
-            const enemyCenterY = enemyY + ENEMY_SIZE / 2;
-
-            const dx = playerCenterX - enemyCenterX;
-            const dy = playerCenterY - enemyCenterY;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-
-            // 不要亂飄，直接朝主角移動
-            const driftX = 0;
-            const driftY = 0;
-
-            // 移動
-            if (distance > 1) {
-                enemyX += (dx / distance) * baseSpeed * deltaTime + driftX;
-                enemyY += (dy / distance) * baseSpeed * deltaTime + driftY;
+            // 只要還沒碰到主角就繼續移動
+            if (dist > 1) {
+                enemyX += dx * baseSpeed * deltaTime;
+                enemyY += dy * baseSpeed * deltaTime;
                 enemy.style.left = `${enemyX}px`;
                 enemy.style.top = `${enemyY}px`;
             }
 
             // 碰撞判斷
-            if (distance < PLAYER_CLOSE_DISTANCE) {
+            if (dist < PLAYER_CLOSE_DISTANCE) {
                 enemy.remove();
                 checkGameProgress();
                 return;
