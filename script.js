@@ -951,4 +951,15 @@ function updateEnemyCount() {
         leaderboardDiv.style.display = 'block';
       });
 }
+
+// 預載入圖片資源
+const imagesToPreload = [
+  'gif/第一關.jpg',
+  'gif/背景2.png',
+  'gif/背景3.png'
+];
+imagesToPreload.forEach(src => {
+  const img = new Image();
+  img.src = src;
+});
 });
